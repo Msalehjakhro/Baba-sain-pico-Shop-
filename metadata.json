@@ -1,0 +1,6 @@
+{
+  "name": "Rheman Pico Shop",
+  "description": "Professional product catalogue for Rheman Pico Shop showcasing exclusive items, details, and prices in PKR.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

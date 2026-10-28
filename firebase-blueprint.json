@@ -1,0 +1,185 @@
+{
+  "entities": {
+    "Product": {
+      "title": "Product",
+      "description": "A catalogue product item for Rheman Pico Shop",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier of the product"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "description": "Product name"
+        },
+        "price": {
+          "type": "number",
+          "description": "Price in Pakistani Rupees (PKR)"
+        },
+        "category": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 50,
+          "description": "Product category"
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 1500,
+          "description": "Product description and specifications"
+        },
+        "imageUrl": {
+          "type": "string",
+          "maxLength": 700000,
+          "description": "Image data URI or image URL"
+        },
+        "isPublished": {
+          "type": "boolean",
+          "description": "Whether the product is visible in public catalogue"
+        },
+        "featured": {
+          "type": "boolean",
+          "description": "Whether the product is highlighted on the home page"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Creation timestamp"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Last update timestamp"
+        }
+      },
+      "required": ["name", "price", "category", "isPublished", "createdAt", "updatedAt"]
+    },
+    "Category": {
+      "title": "Category",
+      "description": "Product categories in Rheman Pico Shop",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Category document ID"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 50,
+          "description": "Category name"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Creation timestamp"
+        }
+      },
+      "required": ["name", "createdAt"]
+    },
+    "ShopInfo": {
+      "title": "ShopInfo",
+      "description": "Editable shop information and contact details",
+      "type": "object",
+      "properties": {
+        "shopName": {
+          "type": "string",
+          "maxLength": 100,
+          "description": "Shop title"
+        },
+        "aboutText": {
+          "type": "string",
+          "maxLength": 2000,
+          "description": "About Rheman Pico Shop"
+        },
+        "phone": {
+          "type": "string",
+          "maxLength": 50,
+          "description": "Contact phone number (editable)"
+        },
+        "whatsappNumber": {
+          "type": "string",
+          "maxLength": 50,
+          "description": "Customer support WhatsApp number (editable)"
+        },
+        "logoUrl": {
+          "type": "string",
+          "maxLength": 700000,
+          "description": "Custom shop logo image (data URI or URL)"
+        },
+        "address": {
+          "type": "string",
+          "maxLength": 200,
+          "description": "Shop address / location (editable)"
+        },
+        "city": {
+          "type": "string",
+          "maxLength": 50,
+          "description": "City"
+        },
+        "businessHours": {
+          "type": "string",
+          "maxLength": 100,
+          "description": "Working hours"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Last update timestamp"
+        }
+      },
+      "required": ["shopName", "updatedAt"]
+    },
+    "Admin": {
+      "title": "Admin",
+      "description": "Authorized administrator profile",
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "Admin email address"
+        },
+        "role": {
+          "type": "string",
+          "enum": ["admin"],
+          "description": "Admin role"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Registration timestamp"
+        }
+      },
+      "required": ["email", "role"]
+    }
+  },
+  "firestore": {
+    "/products/{productId}": {
+      "schema": {
+        "$ref": "#/entities/Product"
+      },
+      "description": "Public catalogue products"
+    },
+    "/categories/{categoryId}": {
+      "schema": {
+        "$ref": "#/entities/Category"
+      },
+      "description": "Product categories list"
+    },
+    "/shop_info/{infoId}": {
+      "schema": {
+        "$ref": "#/entities/ShopInfo"
+      },
+      "description": "Editable shop settings and contact info"
+    },
+    "/admins/{adminId}": {
+      "schema": {
+        "$ref": "#/entities/Admin"
+      },
+      "description": "System admin authorization"
+    }
+  }
+}

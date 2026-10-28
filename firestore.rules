@@ -1,0 +1,94 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() &&
+        request.auth.token.email_verified == true &&
+        (request.auth.token.email == 'digitaltteem@gmail.com' || exists(/databases/$(database)/documents/admins/$(request.auth.uid)));
+    }
+
+    function isValidProduct(data) {
+      return data.keys().hasAll(['name', 'price', 'category', 'isPublished', 'createdAt', 'updatedAt']) &&
+        data.keys().hasOnly(['name', 'price', 'category', 'isPublished', 'createdAt', 'updatedAt', 'id', 'description', 'imageUrl', 'featured']) &&
+        data.name is string && data.name.size() >= 1 && data.name.size() <= 100 &&
+        data.price is number && data.price >= 0 &&
+        data.category is string && data.category.size() >= 1 && data.category.size() <= 50 &&
+        data.isPublished is bool &&
+        (!('description' in data) || (data.description is string && data.description.size() <= 1500)) &&
+        (!('imageUrl' in data) || (data.imageUrl is string && data.imageUrl.size() <= 700000)) &&
+        (!('featured' in data) || (data.featured is bool));
+    }
+
+    function isValidCategory(data) {
+      return data.keys().hasAll(['name', 'createdAt']) &&
+        data.keys().hasOnly(['name', 'createdAt', 'id']) &&
+        data.name is string && data.name.size() >= 1 && data.name.size() <= 50;
+    }
+
+    function isValidShopInfo(data) {
+      return data.keys().hasAll(['shopName', 'updatedAt']) &&
+        data.keys().hasOnly(['shopName', 'aboutText', 'phone', 'whatsappNumber', 'logoUrl', 'address', 'city', 'businessHours', 'updatedAt']) &&
+        data.shopName is string && data.shopName.size() <= 100 &&
+        (!('aboutText' in data) || (data.aboutText is string && data.aboutText.size() <= 2000)) &&
+        (!('phone' in data) || (data.phone is string && data.phone.size() <= 50)) &&
+        (!('whatsappNumber' in data) || (data.whatsappNumber is string && data.whatsappNumber.size() <= 50)) &&
+        (!('logoUrl' in data) || (data.logoUrl is string && data.logoUrl.size() <= 700000)) &&
+        (!('address' in data) || (data.address is string && data.address.size() <= 200)) &&
+        (!('city' in data) || (data.city is string && data.city.size() <= 50)) &&
+        (!('businessHours' in data) || (data.businessHours is string && data.businessHours.size() <= 100));
+    }
+
+    // Products Collection (Public browse, Admin edit)
+    match /products/{productId} {
+      allow get, list: if true;
+      allow create: if isAdmin() && isValidId(productId) && isValidProduct(incoming());
+      allow update: if isAdmin() && isValidId(productId) && isValidProduct(incoming());
+      allow delete: if isAdmin() && isValidId(productId);
+    }
+
+    // Categories Collection (Public browse, Admin edit)
+    match /categories/{categoryId} {
+      allow get, list: if true;
+      allow create: if isAdmin() && isValidId(categoryId) && isValidCategory(incoming());
+      allow update: if isAdmin() && isValidId(categoryId) && isValidCategory(incoming());
+      allow delete: if isAdmin() && isValidId(categoryId);
+    }
+
+    // Shop Information Collection
+    match /shop_info/{infoId} {
+      allow get, list: if true;
+      allow create, update: if isAdmin() && isValidId(infoId) && isValidShopInfo(incoming());
+      allow delete: if false;
+    }
+
+    // Admins Collection
+    match /admins/{adminId} {
+      allow read: if isAdmin();
+      allow write: if isAdmin();
+    }
+
+    // Default catch-all denies all other collections
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
