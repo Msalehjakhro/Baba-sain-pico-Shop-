@@ -458,8 +458,33 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose }) => {
             </div>
 
             {authError && (
-              <div className="p-3 bg-red-50 border border-red-300 text-red-800 text-xs rounded-xs text-left">
-                <strong>Access Note:</strong> {authError}
+              <div className="p-3.5 bg-red-50 border border-red-300 text-red-900 text-xs rounded-xs text-left space-y-2">
+                <div className="font-bold flex items-center gap-1.5 text-red-800">
+                  <AlertTriangle className="w-4 h-4 text-red-600 shrink-0" />
+                  <span>Login Issue Encountered:</span>
+                </div>
+                <p className="leading-relaxed text-neutral-800">{authError}</p>
+
+                {authError.includes('Authorized Domains') && typeof window !== 'undefined' && (
+                  <div className="pt-2 border-t border-red-200 space-y-1.5">
+                    <span className="block font-semibold text-neutral-900">Aapka Vercel Domain:</span>
+                    <div className="flex items-center gap-2">
+                      <code className="bg-white px-2 py-1 rounded border border-neutral-300 font-mono text-[11px] text-neutral-800 select-all flex-1 truncate">
+                        {window.location.hostname}
+                      </code>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          navigator.clipboard.writeText(window.location.hostname);
+                          alert('Domain copied! Ab Firebase Console mein add karein.');
+                        }}
+                        className="px-2.5 py-1 bg-red-800 text-white font-semibold rounded text-[11px] hover:bg-red-900 transition"
+                      >
+                        Copy Domain
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 

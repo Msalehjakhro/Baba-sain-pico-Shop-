@@ -71,9 +71,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setAuthError(`Signed in as ${result.user.email}. Only the shop owner (${OWNER_EMAIL}) has admin editing permissions.`);
         return false;
       }
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Login failed. Please try again.';
-      setAuthError(msg);
+    } catch (err: any) {
+      console.error('Firebase Auth Error:', err);
+      const errorCode = err?.code || '';
+      const currentHost = typeof window !== 'undefined' ? window.location.hostname : '';
+      
+      if (errorCode === 'auth/unauthorized-domain' || (err?.message && err.message.includes('unauthorized-domain'))) {
+        setAuthError(
+          `Domain Unauthorized: Aapki Vercel website ("${currentHost}") Firebase ke Authorized Domains mein shamil nahi hai. Firebase Console mein Authentication > Settings > Authorized domains mein "${currentHost}" add karein.`
+        );
+      } else if (errorCode === 'auth/popup-blocked') {
+        setAuthError('Browser ne Google login popup block kar diya hai. Apne browser mein Pop-ups allow karein aur dobara try karein.');
+      } else if (errorCode === 'auth/popup-closed-by-user') {
+        setAuthError('Login popup band ho gaya. Dobara "Sign In with Google" dabayein.');
+      } else {
+        const msg = err instanceof Error ? err.message : 'Login failed. Please try again.';
+        setAuthError(msg);
+      }
       return false;
     }
   };
