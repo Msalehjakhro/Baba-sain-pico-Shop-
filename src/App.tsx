@@ -23,6 +23,7 @@ import { ShopInfoSection } from './components/ShopInfoSection';
 import { AdminDashboard } from './components/AdminDashboard';
 import { QRCodeModal } from './components/QRCodeModal';
 import { OfflineIndicator } from './components/OfflineIndicator';
+import { AdsterraBanner } from './components/AdsterraBanner';
 import { Product } from './types';
 
 function CatalogueContent() {
@@ -192,6 +193,9 @@ function CatalogueContent() {
           </div>
         </div>
 
+        {/* Adsterra Advertisement Banner (Above Catalogue Grid) */}
+        <AdsterraBanner className="my-2" label="Sponsored" />
+
         {/* Product Cards Grid */}
         {loading ? (
           <div className="py-20 text-center space-y-3">
@@ -232,6 +236,9 @@ function CatalogueContent() {
             ))}
           </div>
         )}
+
+        {/* Adsterra Advertisement Banner (Below Catalogue Grid) */}
+        <AdsterraBanner className="mt-12 pt-4 border-t border-neutral-200" label="Sponsored Content" />
       </main>
 
       {/* Shop Information Section */}

@@ -72,9 +72,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return false;
       }
     } catch (err: any) {
-      console.error('Firebase Auth Error:', err);
       const errorCode = err?.code || '';
       const currentHost = typeof window !== 'undefined' ? window.location.hostname : '';
+      
+      if (errorCode === 'auth/popup-closed-by-user') {
+        // User voluntarily dismissed the sign-in modal; no need for warning or alert
+        setAuthError(null);
+        return false;
+      }
+      
+      console.warn('Firebase Auth Notification:', errorCode || err?.message || err);
       
       if (errorCode === 'auth/unauthorized-domain' || (err?.message && err.message.includes('unauthorized-domain'))) {
         setAuthError(
@@ -82,8 +89,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         );
       } else if (errorCode === 'auth/popup-blocked') {
         setAuthError('Browser ne Google login popup block kar diya hai. Apne browser mein Pop-ups allow karein aur dobara try karein.');
-      } else if (errorCode === 'auth/popup-closed-by-user') {
-        setAuthError('Login popup band ho gaya. Dobara "Sign In with Google" dabayein.');
       } else {
         const msg = err instanceof Error ? err.message : 'Login failed. Please try again.';
         setAuthError(msg);

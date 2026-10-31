@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://ais-pre-6xkorlfh4katyzpoe47rov-217485267470.asia-southeast1.run.app/sitemap.xml
+Sitemap: https://baba-sain-pico.vercel.app/sitemap.xml
